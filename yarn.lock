@@ -286,6 +286,10 @@ mime@1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.3.4.tgz#115f9e3b6b3daf2959983cb38f149a2d40eb5d53"
 
+mongo-hacker@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/mongo-hacker/-/mongo-hacker-0.0.15.tgz#d3c7654e691166c952805a8dafe4b5e1a68c77c5"
+
 mongodb-core@2.1.15:
   version "2.1.15"
   resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.15.tgz#841f53b87ffff4c7458189c35c8ae827e1169764"
