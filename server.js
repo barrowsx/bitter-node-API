@@ -53,6 +53,6 @@ io.on('connection', socket => {
   })
 })
 
-const port = 3002
+const port = process.env.PORT || 3002
 io.listen(port)
 console.log('listening on port', port)
