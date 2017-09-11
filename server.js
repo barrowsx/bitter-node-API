@@ -6,7 +6,7 @@ io.on('connection', socket => {
 
   socket.on('create chat', (user, currentUser) => {
     let chatName = user.toString() + '_' + currentUser.toString()
-    mongo.connect(MONGODB_URI, (err, db) => {
+    mongo.connect(process.env.MONGODB_URI, (err, db) => {
       let collection = db.collection(chatName)
       db.listCollections({name: chatName}).next((err, collInfo) => {
         if(collInfo){
@@ -27,7 +27,7 @@ io.on('connection', socket => {
 
   // socket.on('chat connect')
 
-  mongo.connect(MONGODB_URI, (err, db) => {
+  mongo.connect(process.env.MONGODB_URI, (err, db) => {
     let collection = db.collection('chat messages')
     let stream = collection.find().sort({date: -1}).limit(10).stream()
     stream.on('data', chat => {
@@ -36,7 +36,7 @@ io.on('connection', socket => {
   })
 
   socket.on('chat', (usr, msg, date) => {
-    mongo.connect(MONGODB_URI, (err, db) => {
+    mongo.connect(process.env.MONGODB_URI, (err, db) => {
       let collection = db.collection('chat messages')
       collection.insert({user: usr, content: msg, date: date}, (err, o) => {
         if(err){
