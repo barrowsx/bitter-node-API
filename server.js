@@ -6,37 +6,46 @@ let chatName = ''
 io.on('connection', socket => {
   console.log('a user connected')
 
-  socket.on('create chat', (user, currentUser) => {
-    chatName = user.toString() + '_' + currentUser.toString()
-    mongo.connect(MONGODB_URI, (err, db) => {
-      let collection = db.collection(chatName)
-      db.listCollections({name: chatName}).next((err, collInfo) => {
-        if(collInfo){
-          console.log('chatroom ' + chatName + ' already exists, not creating...')
-        } else {
-          db.createCollection(chatName)
-          console.log('chatroom ' + chatName + ' created')
-        }
+  socket.on('create', (user, currentUser) => {
+    if(user === null || currentUser === null){
+      console.log('user = ', user, 'currentUser = ', currentUser)
+      console.log('skipping...')
+    } else {
+      chatName = user.toString() + '_' + currentUser.toString()
+      mongo.connect(MONGODB_URI, (err, db) => {
+        let collection = db.collection(chatName)
+        db.listCollections({name: chatName}).next((err, collInfo) => {
+          if(collInfo){
+            console.log('chatroom ' + chatName + ' already exists, not creating...')
+          } else {
+            db.createCollection(chatName)
+            console.log('chatroom ' + chatName + ' created')
+          }
+        })
       })
-    })
+    }
   })
 
   socket.on('room', room => {
     console.log('joining room', room)
     chatName = room
-    socket.join(room)
-    mongo.connect(MONGODB_URI, (err, db) => {
-      let collection = db.collection(room)
-      let stream = collection.aggregate([
-        //sort({date: -1}).limit(10)
-        {'$sort': {date: -1}},
-        {'$limit': 10},
-        {'$sort': {date: 1}}
-      ]).stream()
-      stream.on('data', chat => {
-        socket.emit('load chat', chat, room)
+    if(room === null || room === ''){
+      console.log('room is ' + room + ', skipping...')
+    } else {
+      socket.join(room)
+      socket.emit('clear chat', [], room)
+      mongo.connect(MONGODB_URI, (err, db) => {
+        let collection = db.collection(room)
+        let stream = collection.aggregate([
+          {'$sort': {date: -1}},
+          {'$limit': 10},
+          {'$sort': {date: 1}}
+        ]).stream()
+        stream.on('data', chat => {
+          socket.emit('load chat', chat, room)
+        })
       })
-    })
+    }
   })
 
 
